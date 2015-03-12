@@ -173,5 +173,6 @@
     <None Include="res\kursovaya.rc2">
       <Filter>Файлы ресурсов</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

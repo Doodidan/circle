@@ -28,11 +28,17 @@ BEGIN_MESSAGE_MAP(CkursovayaView, CView)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CkursovayaView::OnFilePrintPreview)
 	ON_WM_CONTEXTMENU()
 	ON_WM_RBUTTONUP()
+	ON_WM_LBUTTONDOWN()
+	ON_WM_TIMER()
+	ON_COMMAND(ID_FUNCTION_CIRCLE, &CkursovayaView::OnFunctionCircle)
 END_MESSAGE_MAP()
 
 // создание/уничтожение CkursovayaView
 
 CkursovayaView::CkursovayaView()
+	: new_point(0)
+	, current_point(0)
+	, end_point(0)
 {
 	// TODO: добавьте код создания
 
@@ -52,14 +58,17 @@ BOOL CkursovayaView::PreCreateWindow(CREATESTRUCT& cs)
 
 // рисование CkursovayaView
 
-void CkursovayaView::OnDraw(CDC* /*pDC*/)
+void CkursovayaView::OnDraw(CDC* pDC)
 {
-	CkursovayaDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);
-	if (!pDoc)
-		return;
-
-	// TODO: добавьте здесь код отрисовки для собственных данных
+	CPen myPen;
+	CPen *myOldPen;
+	myPen.CreatePen(PS_SOLID, 2, RGB(0, 0, 255));
+	myOldPen = pDC->SelectObject(&myPen);
+	CBrush myBrush;
+	CBrush *myOldBrush;
+	myBrush.CreateSolidBrush(RGB(255, 0, 0));
+	myOldBrush = pDC->SelectObject(&myBrush);
+	pDC->Ellipse(current_point.x, current_point.y, current_point.x - 10, current_point.y - 10);
 }
 
 
@@ -125,3 +134,37 @@ CkursovayaDoc* CkursovayaView::GetDocument() const // встроена неотлаженная верс
 
 
 // обработчики сообщений CkursovayaView
+
+
+void CkursovayaView::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	end_point.x = point.x;
+	end_point.y = point.y;
+	new_point.x = current_point.x;
+	new_point.y = current_point.y;
+	SetTimer(1, 40, NULL);
+}
+
+
+void CkursovayaView::OnTimer(UINT_PTR nIDEvent)
+{
+	if (
+		(50 * abs(end_point.x - current_point.x) > abs(end_point.x - new_point.x))
+		&&
+		(50 * abs((end_point.y - current_point.y) > abs(end_point.y - new_point.y)))
+	) {
+		cpointx += (float)(end_point.x - new_point.x) / 50;
+		cpointy += (float)(end_point.y - new_point.y) / 50;
+		current_point.x = (int)cpointx;
+		current_point.y = cpointy;
+		GetDocument()->UpdateAllViews(NULL);
+	}
+}
+
+
+void CkursovayaView::OnFunctionCircle()
+{
+	current_point.x = cpointx = 100;
+	current_point.y = cpointy = 100;
+	GetDocument()->UpdateAllViews(NULL);
+}

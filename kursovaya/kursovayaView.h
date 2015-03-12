@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "atltypes.h"
 
 
 class CkursovayaView : public CView
@@ -43,6 +44,14 @@ protected:
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	DECLARE_MESSAGE_MAP()
+	CPoint new_point;
+	CPoint current_point;
+	CPoint end_point;
+	float cpointx, cpointy;
+public:
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnFunctionCircle();
 };
 
 #ifndef _DEBUG  // отладочная версия в kursovayaView.cpp
